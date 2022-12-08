@@ -1,0 +1,245 @@
+---
+title: "CNS_Final"
+author: "Daniel Riddick"
+date: "2022-11-15"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Libraries
+```{r}
+#Libraries
+library(bibliometrix)
+library(tidyverse)
+```
+Final Data Entry
+```{r}
+#Data input from 3 different keywords (keywords are specific research areas of interest within CNS that were attained through an interview process with personnel. The keywords list reflects a majority of research subject areas of interest.)
+
+#First Keyword, Theoretical Physics with 4 bibtex files since WoS (Web of Science) only allows 500 publications extracted at one time.
+
+Theo1 <- convert2df(file = 'C://Users//danie//Desktop//Theoretical_Physics//savedrecs.bib', dbsource = "wos", format = "bibtex")
+Theo2 <- convert2df(file = 'C://Users//danie//Desktop//Theoretical_Physics//savedrecs2.bib', dbsource = "wos", format = "bibtex")
+Theo3 <- convert2df(file = 'C://Users//danie//Desktop//Theoretical_Physics//savedrecs3.bib', dbsource = "wos", format = "bibtex")
+Theo4 <- convert2df(file = 'C://Users//danie//Desktop//Theoretical_Physics//savedrecs4.bib', dbsource = "wos", format = "bibtex")
+#Rbind, first there has to be all the same amount of columns
+s <- which(colnames(Theo1) %in% colnames(Theo3))
+Theo1 <- Theo1[,s]
+s <- which(colnames(Theo2) %in% colnames(Theo3))
+Theo2 <- Theo2[,s]
+#Now Rbind all columns into one dataframe
+Theo <- rbind(Theo1,Theo2)
+Theo <- rbind(Theo,Theo3)
+Theo <- rbind(Theo, Theo4)
+#Deleting to clean up environment
+Theo1 <- NULL; Theo2 <- NULL; Theo3 <- NULL; Theo4 <- NULL
+
+#Second Keyword is Nuclear Engineering, remember that file paths are subject to change and that data must be aquired first from web of science
+
+Nuc_Engin1 <- convert2df(file = 'C://Users//danie//Desktop//Nuclear_Engineering//savedrecs.bib', dbsource = "wos", format = "bibtex")
+Nuc_Engin2 <- convert2df(file = 'C://Users//danie//Desktop//Nuclear_Engineering//savedrecs2.bib', dbsource = "wos", format = "bibtex")
+Nuc_Engin3 <- convert2df(file = 'C://Users//danie//Desktop//Nuclear_Engineering//savedrecs3.bib', dbsource = "wos", format = "bibtex")
+#Rbind, first there has to be all the same number of columns
+s <- which(colnames(Nuc_Engin1) %in% colnames(Nuc_Engin3))
+Nuc_Engin1 <- Nuc_Engin1[,s]
+s <- which(colnames(Nuc_Engin2) %in% colnames(Nuc_Engin3))
+Nuc_Engin2 <- Nuc_Engin2[,s]
+#Now Rbind
+Nuc_Engin <- rbind(Nuc_Engin1,Nuc_Engin2)
+Nuc_Engin <- rbind(Nuc_Engin,Nuc_Engin3)
+#Clean
+Nuc_Engin1 <- NULL; Nuc_Engin2 <- NULL; Nuc_Engin3 <- NULL
+
+#Last Keyword is Nonproliferation, it had under 500 publications after initial filters were utilized in web of science.
+
+Nonproliferation <- convert2df(file = 'C://Users//danie//Desktop//Nonproliferation//savedrecs.bib', dbsource = "wos", format = "bibtex")
+
+#Added due to errors for plots within Nonproliferation
+Explosives_Engineering <- convert2df(file = 'C://Users//danie//Desktop//Nonproliferation//savedrecs2.bib', dbsource = "wos", format = "bibtex")
+
+
+```
+Data Validation
+
+```{r}
+#ROT Elimination (May need to be modified for bibliographic analysis)
+#BO,earlyaccessdate,BE,eissn,BN,FX,organization,PP,researcherid.numbers,SE,AU_UN_NR
+#Identified the numbers for each of the above listed columns as ROT
+s <- which(colnames(Theo) %in% c('BO','earlyaccessdate','BE','eissn','BN','FX','organization','PP','researcherid.numbers','SE','AU_UN_NR'))
+Theo <- Theo[,-s]
+
+#Nuclear Engineering, c("note", "AU_UN_NR")
+s <- which(colnames(Nuc_Engin)%in% c("note", "AU_UN_NR"))
+Nuc_Engin <- Nuc_Engin[,-s]
+
+#Nonproliferation, c("book.author","BO","BE","BN","note","oa","researcherid.numbers","SE","AU_UN_NR")
+s <- which(colnames(Nonproliferation) %in% c("book.author","BO","BE","BN","note","oa","researcherid.numbers","SE","AU_UN_NR"))
+Nonproliferation <- Nonproliferation[,-s]
+
+#Added Explosives Engineering
+s <- which(colnames(Explosives_Engineering) %in% c("book.author","BO","BE","BN","note","oa","researcherid.numbers","SE","AU_UN_NR"))
+Explosives_Engineering <- Explosives_Engineering[,-s]
+```
+
+
+```{r}
+#Merger Verification by unique values for columns of interest for first keyword Theoretical Physics
+
+#columns of interest, affiliations, SO(Journal name), TC (Times Cited), AU1_UN (Author affiliation)
+#unique(Theo$affiliations) #its good but this code bogs down the computer
+#unique(Theo$SO) #also good, also bogs down computer
+#unique(Theo$TC) #Very good, important this is clean
+#unique(Theo$AU1_UN) #Usable, some "Corresponding author mishaps, but overall fairly decent"
+
+#Merger Verification by sampling unique values for columns of interest for second keyword Nuclear Engineering
+
+#columns of interest, affiliations, SO(Journal name), TC (Times Cited), AU1_UN (Author affiliation)
+#unique(Nuc_Engin$affiliations) #its good but this code bogs down the computer
+#unique(Nuc_Engin$SO) #also good, also bogs down computer
+#unique(Nuc_Engin$TC) #Very good, important this is clean
+#unique(Nuc_Engin$AU1_UN) #Usable, some "Corresponding author mishaps, but overall fairly decent"
+
+#Merger Verification by sampling unique values for columns of interest for third keyword Nonproliferation
+
+#columns of interest, affiliations, SO(Journal name), TC (Times Cited), AU1_UN (Author affiliation)
+#unique(Nonproliferation$affiliations) #its good 
+#unique(Nonproliferation$SO) #also good
+#unique(Nonproliferation$TC) #Very good, important this is clean
+#unique(Nonproliferation$AU1_UN) #Usable
+print("clean")
+```
+
+
+```{r}
+#Sampling Method for abstracts to ensure they are on target, 10 per subject
+
+#set.seed(1000);
+#sample(Theo$AB, size = 10 , replace = F) #Consolidated, output heavy section (30 abstracts)
+#Short topic notes for this iteration
+#1. Physics of smooth trachea walls
+#2. PDF of theoretical error, Red shifts, theoretical error
+#3. Dimensional kinetic particle in-cell simulations
+#4. Proton-Proton collisions results and comparisons to theoretical calculations
+#5. Gravitational wave observations leading to modifications for general relativity
+#6. Literature review that uses Quantum mechanics and other theoretical approaches? Not good
+#7  The affect of pore fluids on acoustic wave dispersion in rocks
+#8. Highly compressible pulsating flows
+#9. SINGLE-MOLECULE DETECTION CAN REVEAL TIME TRAJECTORIES AND REACTION PATHWAYS OF INDIVIDUAL INTERMEDIATES/TRANSITION STATES IN CHEMICAL REACTIONS AND BIOLOGICAL PROCESSES
+#10. Condensed matter physics, activated dynamics in diverse glass forming liquids.
+
+#set.seed(1000);
+#sample(Nuc_Engin$AB, size = 10 , replace = F)
+#1. Mechanistic interpretation of clay dehydration being key to coupling natural/engineered barriers
+#2. Prompt Gamma Activation Analysis to quantify Boron concentrations in Boron Carbide Semiconductor
+#3. Graphite reactor components for reactor operator to arrive at optimum component replacement schedule for the graphite components to improve safety.
+#4. Next generation nuclear plant using printed circuit heat exchangers, with super critical carbon dioxide SCO(2) as the working fluid
+#5. Genetically engineered bacteria to help fight influenza (Virology off-target)
+#6. Another advanced nuclear power plant
+#7. More focused on Nonproliferation 
+#8. seismic isolation systems to protect nuclear infrastructure
+#9. Cost and usage of Nuclear density gauge
+#10. Lessons of the Fukishima reactor incident
+
+#set.seed(1000);
+#sample(Nonproliferation$AB, size = 10, replace = F)
+#1. Improved understanding of evolution of the nonproliferation regime through examining US and French Nuclear Cooperation agreements
+#2. Chernobyl incident review
+#3. Detecting, localizing, and characterizing nuclear material for safeguard and nonproliferation
+#4. Complex ionization tests from Sandia in order to ultimately help medical physics, national security and nonproliferation.
+#5. Sphere of A-phase plutonium subjected to passive imagining using optically stimulated luminescence 
+#6. FOR THE FIRST TIME, THE NEUTRON AND GAMMA-RAY TIME-DEPENDENT CROSS-CORRELATION DISTRIBUTIONS FROM SPONTANEOUS FISSION AND (ALPHA, N) NEUTRON SOURCES ARE MEASURED WITH THE HE-4 FAST NEUTRON DETECTORS.
+#7. NA
+#8. "ROSSI-ALPHA NEUTRON EXPERIMENTS ARE USED TO ESTIMATE THE PROMPT NEUTRON DECAY CONSTANT OF A FISSILE ASSEMBLY, A QUANTITY OF WIDESPREAD INTEREST IN APPLICATIONS INCLUDING IN NUCLEAR NONPROLIFERATION AND CRITICALITY SAFETY.
+#9. "MUCH OF INTERNATIONAL RELATIONS SCHOLARSHIP ATTRIBUTES THE UNITED STATES' COMMITMENT TO PREVENT THE GLOBAL SPREAD OF NUCLEAR WEAPONS AS THE OUTCOME OF US NATIONAL SECURITY INTERESTS.
+#10. TO SUPPORT EFFORTS TO STEM THE PROLIFERATION OF CHEMICAL WEAPONS (CWS), WE HAVE CURATED AND STRUCTURALLY ANNOTATED CW-CONTROL LISTS FROM THREE KEY INTERNATIONAL NONPROLIFERATION FRAMEWORKS: THE CHEMICAL WEAPONS CONVENTION (CWC), THE AUSTRALIA GROUP (AG), AND THE WASSENAAR ARRANGEMENT.
+print("clean")
+```
+```{r}
+#Single Country Publications Only
+
+#C1 is author address. Starting with Explosives Engineering
+results <- biblioAnalysis(Explosives_Engineering) 
+#plot(x = results) #Shows multiple country publications
+
+#Determine a means of extracting countries of origin reliably using the C1 variable
+#results$CO #This gives Countries
+Explosives_Engineering$CO <- results$CO
+
+
+#Now Theoretical Physics
+results <- biblioAnalysis(Theo) 
+#plot(x = results) #Shows multiple country publications
+
+#results$CO #This gives Countries
+Theo$CO <- results$CO
+
+
+#Nuclear Engineering
+results <- biblioAnalysis(Nuc_Engin) 
+#plot(x = results) #Shows multiple country publications
+
+#results$CO #This gives Countries
+Nuc_Engin$CO <- results$CO
+
+
+#Nonproliferation
+results <- biblioAnalysis(Nonproliferation) 
+#plot(x = results) #Plot does not work for nonproliferation
+
+#results$CO #This gives Countries
+Nonproliferation$CO <- results$CO
+```
+
+```{r}
+#Extract only Single country publications from the USA
+Theo <- Theo[which(Theo$CO == "USA"),]
+Nuc_Engin <- Nuc_Engin[which(Nuc_Engin$CO == "USA"),]
+Nonproliferation <- Nonproliferation[which(Nonproliferation$CO == "USA"),]
+Explosives_Engineering <- Explosives_Engineering[which(Explosives_Engineering$CO == "USA"),]
+```
+
+```{r}
+#Additional on target validation by keywords by gauging an on target list of keywords as a success and off target keywords as failures. Binomial test and 95% confidence interval are provided.
+
+#Theoretical Physics
+#set.seed(1000); sample(Theo$web.of.science.categories., size = 100, replace = F)
+#12 keywords were off-target, giving an estimated proportion of 88/100 on target
+binom.test(88,100)
+#Given this sample, we can say that we are 95% confident the true proportion of on target publications for theoretical physics is between 0.7997643 and 0.9364311
+
+
+#Nuclear Engineering
+#set.seed(1000); sample(Nuc_Engin$web.of.science.categories., size = 100, replace = F)
+#Nuclear engineering is a broad topic incorporating some medical advancements that deal with by definition, Nuclear Engineering, these are included as success.
+#10 off-target publications, 90/100 successes
+binom.test(90,100)
+#Given this sample, we can say that we are 95% confident the true proportion of on target publications for Nuclear Engineering is between 0.8237774 and 0.9509953
+
+
+#Nonproliferation
+#set.seed(1000); sample(Nonproliferation$web.of.science.categories., size = 100, replace = F)
+#5 keywords were off-target, giving an estimated proportion of 95/100 on target publications.
+binom.test(95,100)
+#Given this sample, we can say that we are 95% confident the true proportion of on target publications for Nonproliferation is between 0.8871651 and 0.9835681. However, it is important to note that it was assumed nonproliferation comes in forms of law, international relations, engineering practices, research, etc. Only obvious off-topic publications were counted as failures.
+
+#Explosives Engineering
+#Explosives_Engineering$web.of.science.categories.
+#Do not know that much about explosives engineering, results may be neglected.
+#Including forms of potential botany, engineering components, physics, material science, and chemistry. 
+#9 off target, 63 successes
+binom.test(63,72)
+#Given this sample, we can say that we are 95% confident the true proportion of on target publications for Explosives Engineering is between 0.7759281 and 0.9412167.
+
+
+```
+Data Analysis (Consolidated)
+
+```{r}
+
+
+```
+
