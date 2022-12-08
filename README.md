@@ -1,4 +1,4 @@
-# Network Analysis of Scientific Publication
+# Network Analysis of Scientific Publications
 (Title/test)
 (Paper Here)
 
