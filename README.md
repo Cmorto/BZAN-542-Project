@@ -1,2 +1,3 @@
-# BZAN-542-Project
+Network Analysis of Scientific Publication 
 (Paper Here)
+
