@@ -1,0 +1,242 @@
+---
+title: "CNS"
+author: "Daniel Riddick"
+date: '2022-10-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+API Data Call from Web of Science
+
+```{r}
+
+library(httr)
+library(jsonlite)
+library(tidyverse)
+
+key_auth <- 'b6ba871e214c6aad16c6668121d4672e106ec81e'
+my_url <- 'https://api.clarivate.com/apis/wos-starter/v1'
+SO <- "Climate"
+de_call <- paste(my_url,"?","SO","=", (SO), sep = "")
+de_call <- paste(my_url, "/documents","/SO=Climate/",sep = "")
+de_call <- paste(my_url, '/journals', sep = "")
+de_call
+#Here I am calling raw information from the API using a search of Climate Change
+search_data_raw <- GET(de_call, httr::add_headers("X-ApiKey" = key_auth) )
+str(search_data_raw)
+
+#Here I am restructering the raw data into a usable format
+my_content <- httr::content(search_data_raw, as = "text", encoding = "UTF-8" )
+str(my_content)
+
+```
+
+Analysis of Static Data, Data acquired from Web of Science and stored as BibTex file to include reference data.
+
+```{r}
+#install.packages("bibliometrix")
+library(bibliometrix)
+
+DF <- convert2df(file = 'C://Users//danie//Desktop//Web of Science Data//savedrecs (1).bib', dbsource = "wos", format = "bibtex")
+
+#Summary and plots
+summary(DF, k = 10, pause = F)
+results <- biblioAnalysis(DF, sep = ";")
+plot(x = results)
+
+#Dominance result
+DOM_DF <- dominance(results)
+DOM_DF
+
+#H-index to measure productivity and citation impact of the publications of a scholar#
+authors <- gsub(","," ",names(results$Authors))
+indices <- Hindex(DF, field = "author", elements=authors, sep = ";", years = 50)
+indices$H
+
+
+#LOCAL CITATIONS FOR LOCAL SUBJECT AREA IMPACT#
+CR <- localCitations(DF, sep = ";")
+CR
+CR$Authors[1:2000,]
+CR$Papers[1:10,]
+
+
+
+
+
+
+
+
+
+
+
+
+#Adjusted citation counts for new h-index
+library(tidyverse)
+(str_count(DF$AU, ";")+1)
+DF$AU_Count <- (str_count(DF$AU, ";")+1)
+DF$Adjusted_Citation_Count <- DF$TC/sqrt(DF$AU_Count)
+
+DF$Adjusted_Citation_Count
+DF$AU_Count
+
+#H-index calculated by publication ordering (number of papers = 6, then for h-index of 6 all have to be greater than or equal to 6 in adjusted citation count)
+
+
+str_split(DF$AU[1], ";")
+
+Authors <- DF %>%
+  summarise(authors = list(str_split(DF$AU, ";")))
+unlist(Authors)
+
+Authors <- NULL
+
+for (i in 1:500) {
+ Authors[i] <- list(str_split(DF$AU[i], ";"))
+  
+}
+DF3 <- data.frame(rownames(DF),DF$AU_Count,DF$Adjusted_Citation_Count,DF$EM, DF$AU, DF$PY)
+DF$Author_list <- Authors
+DF3$DF.AU<- str_split(DF$AU, pattern = ";")
+DF3$DF.AU
+
+
+DF3$TC <- DF3$DF.Adjusted_Citation_Count
+DF3$DF.Adjusted_Citation_Count <- NULL
+DF3$PY <- DF3$DF.PY
+DF3$DF.PY <- NULL
+DF3$AU <- DF3$DF.AU
+DF3$DF.AU <- NULL
+DF3
+DF3$AU_Count <- DF3$DF.AU_Count
+DF3$DF.AU_Count <- NULL
+DF3$EM <- DF3$DF.EM 
+DF3$DF.EM <- NULL
+
+
+DF3[order(DF3$TC, decreasing = T),]
+
+DF3$AU[417]
+
+DF$AU
+DF3
+DF3$OrAU <- DF$AU
+results <- biblioAnalysis(DF3, sep = ";")
+results$FirstAffiliation
+authors <- gsub(","," ",names(results$Authors))
+Hindex(DF3, field = "author", elements = OrAU, sep = ";", years = 20)
+
+1+1
+#############################
+DF <- convert2df(file = 'C://Users//danie//Desktop//Web of Science Data//savedrecs (1).bib', dbsource = "wos", format = "bibtex")
+
+#Summary and plots
+summary(DF, k = 10, pause = F)
+DF$TC
+DF$TC <- floor(DF3$TC) 
+results <- biblioAnalysis(DF, sep = ";")
+authors <- gsub(","," ",names(results$Authors))
+indices <- Hindex(DF, field = "author", elements = authors, sep = ";", years = 20)
+indices$H
+indices$H[order(indices$H$h_index, decreasing = T),]
+#More accurate by making it harder to be gauged as successful impact, no more 2000 author weight bearing in H-index
+
+#How do you get their email and affiliation?
+indices$H
+str_split(DF$EM, " ")
+indices$H
+any(str_split(DF$AU[1], ";") == "SCHMIT PF")
+
+
+
+which(str_detect(str_split(DF$AU[1], ";"), pattern = "SCHMIT PF"))
+which(str_detect(str_split(DF$AU, ";"), pattern = "ABBOTT T"))
+which(str_detect(str_split(DF$AU, ";"), pattern = "AMBROGI F"))
+
+indices$H[order(indices$H$h_index, decreasing = T),]
+affiliations <- c()
+for (i in 1:500) {
+ affiliations[i] <- unlist(str_split(DF$C1[i], ","))[3]
+}
+DF$Affiliations <- affiliations
+
+
+OUTPUT <-  DF[which(str_detect(str_split(DF$AU, ";"), pattern = "DEMLER E")),]
+OUTPUT2 <- DF[which(str_detect(str_split(DF$AU, ";"), pattern = "LIU Y")),]
+OUTPUT3 <- DF[which(str_detect(str_split(DF$AU, ";"), pattern = "AUMAYR F")),]
+OUTPUT4 <- DF[which(str_detect(str_split(DF$AU, ";"), pattern = "BLOCH I")),]
+OUTPUT5 <- DF[which(str_detect(str_split(DF$AU, ";"), pattern = "BOHRDT A")),]
+OUTPUT <- add_row(OUTPUT, OUTPUT2)
+OUTPUT <- add_row(OUTPUT,OUTPUT3)
+OUTPUT <- add_row(OUTPUT,OUTPUT4)
+OUTPUT <- add_row(OUTPUT,OUTPUT5)
+OUTPUT <- OUTPUT[-c(7,9),]
+FO <- OUTPUT %>%
+  select(c("AU", "EM", "Affiliations","ID" ,"AB"))
+indices$H[order(indices$H$h_index, decreasing = T)[1:5],]
+rep(indices$H[order(indices$H$h_index, decreasing = T)[1:5],])
+###############################
+
+
+#Top Authors Plot
+topAU <- authorProdOverTime(DF, k = 10, graph = TRUE)
+
+#Lotka
+L <- lotka(results)
+L$AuthorProd
+
+# Observed distribution
+Observed=L$AuthorProd[,3]
+
+# Theoretical distribution with Beta = 2
+Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]))
+
+plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",main="Scientific Productivity")
+lines(L$AuthorProd[,1],Observed,col="blue")
+legend(x="topright",c("Theoretical (B=2)","Observed"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
+
+#Co-citation Network
+A <- cocMatrix(DF, Field = "CR", sep = ". ")
+NetMatrix <- biblioNetwork(DF, analysis = "co-citation", network = "references", sep = ";")
+NetStat <- networkStat(NetMatrix)
+summary(NetStat, k = 10)
+#set.seed
+net=networkPlot(NetMatrix, n = 30, Title = "Co-Citation Network", type = "fruchterman", size=T, remove.multiple=FALSE, labelsize=0.7,edgesize = 5)
+
+
+#University Network FAILLLLLL
+M <- metaTagExtraction(DF, Field = "AU_CO")
+M$AU_CO <- affiliations
+NetMatrix <- biblioNetwork(M, analysis = "collaboration", network = "universities", sep = ";")
+net=networkPlot(NetMatrix, n = dim(NetMatrix)[1], Title = "Country Collaboration", type = "circle", size=TRUE, remove.multiple=FALSE,labelsize=0.7,cluster="none")
+
+tail(unlist(str_split(DF$PA[1], " ")),1)
+unlist(str_split(DF$C1[1], ","))[3]
+affiliations <- c()
+for (i in 1:500) {
+ affiliations[i] <- unlist(str_split(DF$C1[i], ","))[3]
+}
+DF$AU_CO <- affiliations
+
+length(unique(DF$Affiliations))
+aff <- table(DF$Affiliations)
+library(ggplot2)
+ggplot(DF, aes(Affiliations)) + geom_mosaic
+?geom_mosaic
+mosaicplot(table(DF$Affiliations))
+mosaicplot(head(sort(table(DF$Affiliations), decreasing = T),5), dir = "v")
+barplot(head(sort(table(DF$Affiliations), decreasing = T),3)) 
+aff$Affiliation <- DF$Affiliations
+
+D <- as.data.frame(table(DF$Affiliations))
+D <- D[order(D$Freq, decreasing = T),]
+D$Affiliation <- D$Var1
+D$Var1 <- NULL
+D_sub <- D[1:20,]
+write.csv(D_sub, "C://Users//danie//Desktop//Web of Science Data//D_sub.csv")
+
+```
+
