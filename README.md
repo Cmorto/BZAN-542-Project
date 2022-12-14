@@ -5,6 +5,12 @@ This project is an example of using R (and possibly R shiny) to Analyze scientif
 
 The data used for this project came from the webofscience. https://www.webofscience.com/wos/woscc/basic-search From the website you can only obtain 500 publications at a time in a Bibtex format. For this reason we limited this initial proof of concept to four specific subject areas: Explosives Engineering, Non Proliferation, Nuclear Engineering, and Theoretical Physics.
 
+## Contacts
+
+- [Daniel Riddick](mailto:danwridd@vols.utk.edu)
+- [Stephen Muszik](mailto:)
+- [Chris Morton](mailto:cmorto11@vols.utk.edu)
+
 ## Cleaning the Data
 
 The data that was used for this project came from the Web of Science. From this database the user is restricted to only extracting 500 records at a time. Because of this constraint, we limited this proof of concept to a small sample of publications from 4 different subject areas: Explosives Engineering, Nonproliferation, Nuclear Engineering, and Theoretical Physics. We also limited the data set to exclude multiple country publications, publications that were 5 years or older, journal articles only, and the English language only. 
