@@ -29,19 +29,19 @@ Binomial 95% confidence test for true on-target publications for specific public
 
 
 
-Conclusions
-            During the analysis, we were able to determine detailed information regarding the most prolific organizations and authors related to each subject area of interest. Below, we have included output related to one subject area of interest, Nonproliferation, in order to showcase some of the output for this project.
-            Figure 1, shows the frequency of affiliations within each of these publications. By utilizing the biblioanalysis function inside the bibliometrix package, affiliations frequencies were generated for each subject area. This bar plot shows the top 20 affiliations associated with Nonproliferation in specific. This output allows the end user to be able to see which organizations would be ideal to contact in relation to Nonproliferation for future partnerships.
+## Conclusions
+During the analysis, we were able to determine detailed information regarding the most prolific organizations and authors related to each subject area of interest. Below, we have included output related to one subject area of interest, Nonproliferation, in order to showcase some of the output for this project.
+Figure 1, shows the frequency of affiliations within each of these publications. By utilizing the biblioanalysis function inside the bibliometrix package, affiliations frequencies were generated for each subject area. This bar plot shows the top 20 affiliations associated with Nonproliferation in specific. This output allows the end user to be able to see which organizations would be ideal to contact in relation to Nonproliferation for future partnerships.
 
 ![alt text]()
 Figure 1
 
-            In order to gauge the relative novelty of each publication, a historical local citation network was built. This can be seen below in figure 2. By looking into the network and understanding how over time authors are citing one another inside this data, the end user can begin to gauge which authors are producing the most novel and prolific publications. The local citation counts were also recorded within the final table output for consideration of the end user.
+In order to gauge the relative novelty of each publication, a historical local citation network was built. This can be seen below in figure 2. By looking into the network and understanding how over time authors are citing one another inside this data, the end user can begin to gauge which authors are producing the most novel and prolific publications. The local citation counts were also recorded within the final table output for consideration of the end user.
 ![alt text]()
 Figure 2
 
 
-            Additionally, the topics with each of the publications were mapped using K-means clustering with correspondence analysis. This end result allows the user to see typical topics and how they are related to each other within each subject area. Figures 3 and 4 both show output forNonproliferation regarding the aforementioned usage.
+Additionally, the topics with each of the publications were mapped using K-means clustering with correspondence analysis. This end result allows the user to see typical topics and how they are related to each other within each subject area. Figures 3 and 4 both show output forNonproliferation regarding the aforementioned usage.
 
 
 
@@ -63,7 +63,7 @@ Figure 3
 ![alt text]()
 Figure 4
 
-            The final
+The final
 
 
 
@@ -75,7 +75,7 @@ Figure 4
 
 
 
-Sources
+## Sources
 https://www.bibliometrix.org/vignettes/Introduction_to_bibliometrix.html
 https://www.webofscience.com/wos/woscc/basic-search
 https://www.rosenberglab.net/impact_adapt_pure_h_index_frac.html
