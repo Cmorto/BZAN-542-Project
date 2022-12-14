@@ -63,7 +63,7 @@ Explosives_Engineering <- convert2df(file = 'C://Users//danie//Desktop//Nonproli
 
 
 ```
-Data Validation
+Data Validation, ROT Removal (Likely to be adjusted again in the future)
 
 ```{r}
 #ROT Elimination (May need to be modified for bibliographic analysis)
@@ -85,6 +85,7 @@ s <- which(colnames(Explosives_Engineering) %in% c("book.author","BO","BE","BN",
 Explosives_Engineering <- Explosives_Engineering[,-s]
 ```
 
+Rbind Merger Verification on Key Columns of Interest
 
 ```{r}
 #Merger Verification by unique values for columns of interest for first keyword Theoretical Physics
@@ -112,7 +113,7 @@ Explosives_Engineering <- Explosives_Engineering[,-s]
 #unique(Nonproliferation$AU1_UN) #Usable
 print("clean")
 ```
-
+Sampling Method on Abstracts to ensure on target publication data
 
 ```{r}
 #Sampling Method for abstracts to ensure they are on target, 10 per subject
@@ -158,6 +159,9 @@ print("clean")
 #10. TO SUPPORT EFFORTS TO STEM THE PROLIFERATION OF CHEMICAL WEAPONS (CWS), WE HAVE CURATED AND STRUCTURALLY ANNOTATED CW-CONTROL LISTS FROM THREE KEY INTERNATIONAL NONPROLIFERATION FRAMEWORKS: THE CHEMICAL WEAPONS CONVENTION (CWC), THE AUSTRALIA GROUP (AG), AND THE WASSENAAR ARRANGEMENT.
 print("clean")
 ```
+
+Storing Publication Countries of Origin
+
 ```{r}
 #Single Country Publications Only
 
@@ -194,6 +198,8 @@ results <- biblioAnalysis(Nonproliferation)
 Nonproliferation$CO <- results$CO
 ```
 
+Removal of international publications and multiple country collaborations to ensure domestic collaboration.
+
 ```{r}
 #Extract only Single country publications from the USA
 Theo <- Theo[which(Theo$CO == "USA"),]
@@ -201,6 +207,8 @@ Nuc_Engin <- Nuc_Engin[which(Nuc_Engin$CO == "USA"),]
 Nonproliferation <- Nonproliferation[which(Nonproliferation$CO == "USA"),]
 Explosives_Engineering <- Explosives_Engineering[which(Explosives_Engineering$CO == "USA"),]
 ```
+
+Binomial tests on n = 100 samples of keywords for each subject area, indicates a potential population accuarcy for on target publications.
 
 ```{r}
 #Additional on target validation by keywords by gauging an on target list of keywords as a success and off target keywords as failures. Binomial test and 95% confidence interval are provided.
@@ -236,10 +244,298 @@ binom.test(63,72)
 
 
 ```
-Data Analysis (Consolidated)
+Citation Count Adjustment for Adapted Pure H-Index, being used is adjusting the Times Cited variable as
+ TC/sqrt("Number of Authors for a publication").
 
 ```{r}
+#TC is times cited, adjustments made on TC will reflect in new H-index values. Adjustment decreases bias.
+Explosives_Engineering$AU_Count <- (str_count(Explosives_Engineering$AU, ";")+1)
+Explosives_Engineering$TC <- round(Explosives_Engineering$TC/sqrt(Explosives_Engineering$AU_Count))
+
+Theo$AU_Count <- (str_count(Theo$AU, ";")+1)
+Theo$TC <- round(Theo$TC/sqrt(Theo$AU_Count))
+
+Nonproliferation$AU_Count <- (str_count(Nonproliferation$AU, ";")+1)
+Nonproliferation$TC <- round(Nonproliferation$TC/sqrt(Nonproliferation$AU_Count))
+
+Nuc_Engin$AU_Count <- (str_count(Nuc_Engin$AU, ";")+1)
+Nuc_Engin$TC <- round(Nuc_Engin$TC/sqrt(Nuc_Engin$AU_Count))
+
+```
+
+
+Initial bibliometric analysis, consolidation of results using bibliometrix package function 
+
+```{r}
+#C1 is author address. Starting with Explosives Engineering
+results_Exp_Eng <- biblioAnalysis(Explosives_Engineering) 
+#plot(x = results) #Shows multiple country publications
+
+#Determine a means of extracting countries of origin reliably using the C1 variable
+
+
+#Now Theoretical Physics
+results_Theo <- biblioAnalysis(Theo) 
+#plot(x = results) #Shows multiple country publications
+
+
+
+#Nuclear Engineering
+results_Nuc_Engin <- biblioAnalysis(Nuc_Engin) 
+#plot(x = results) #Shows multiple country publications
+
+
+#Nonproliferation
+results_Nonproliferation <- biblioAnalysis(Nonproliferation) 
+#plot(x = results) #Plot does not work for nonproliferation
 
 
 ```
+
+Affiliations Visualizations
+
+```{r}
+
+par(mar = c(7, 4, 2, 2) + 0.2); end_point = 0.5 + nrow(results_Nonproliferation$Affiliations[1:20]) + nrow(results_Nonproliferation$Affiliations[1:20]) - 1 ; barplot(results_Nonproliferation$Affiliations[1:20], col = "steelblue", 
+        main = "Most Notable Affiliations for Nonproliferation",
+        ylab = "Frequency of Publications", ylim = c(0,5 + max(results_Nonproliferation$Affiliations[1:20])),
+        xlab = "",
+        xaxt = "n", 
+        space = 1);text(seq(1.5, end_point, by = 2), par("usr")[3]-0.25, 
+     srt = 60, adj = 1, xpd = TRUE,
+     labels = paste(rownames(results_Nonproliferation$Affiliations[1:20])), cex = 0.65)
+
+```
+
+```{r}
+par(mar = c(7, 4, 2, 2) + 0.2); end_point = 0.5 + nrow(results_Exp_Eng$Affiliations[1:20]) + nrow(results_Exp_Eng$Affiliations[1:20]) - 1 ; barplot(results_Exp_Eng$Affiliations[1:20], col = "orangered", 
+        main = "Most Notable Affiliations for Explosives Engineering",
+        ylab = "Frequency of Publications", ylim = c(0,5 + max(results_Exp_Eng$Affiliations[1:20])),
+        xlab = "",
+        xaxt = "n", 
+        space = 1);text(seq(1.5, end_point, by = 2), par("usr")[3]-0.25, 
+     srt = 60, adj = 1, xpd = TRUE,
+     labels = paste(rownames(results_Exp_Eng$Affiliations[1:20])), cex = 0.65)
+```
+
+```{r}
+par(mar = c(7, 4, 2, 2) + 0.2); end_point = 0.5 + nrow(results_Nuc_Engin$Affiliations[1:20]) + nrow(results_Nuc_Engin$Affiliations[1:20]) - 1 ; barplot(results_Nuc_Engin$Affiliations[1:20], col = "yellowgreen", 
+        main = "Most Notable Affiliations for Nuclear Engineering",
+        ylab = "Frequency of Publications", ylim = c(0,5 + max(results_Nuc_Engin$Affiliations[1:20])),
+        xlab = "",
+        xaxt = "n", 
+        space = 1);text(seq(1.5, end_point, by = 2), par("usr")[3]-0.25, 
+     srt = 60, adj = 1, xpd = TRUE,
+     labels = paste(rownames(results_Nuc_Engin$Affiliations[1:20])), cex = 0.65)
+```
+
+```{r}
+par(mar = c(7, 4, 2, 2) + 0.2); end_point = 0.5 + nrow(results_Theo$Affiliations[1:20]) + nrow(results_Theo$Affiliations[1:20]) - 1 ; barplot(results_Theo$Affiliations[1:20], col = "brown", 
+        main = "Most Notable Affiliations for Theoretical Physics",
+        ylab = "Frequency of Publications", ylim = c(0,5 + max(results_Theo$Affiliations[1:20])),
+        xlab = "",
+        xaxt = "n", 
+        space = 1);text(seq(1.5, end_point, by = 2), par("usr")[3]-0.25, 
+     srt = 60, adj = 1, xpd = TRUE,
+     labels = paste(rownames(results_Theo$Affiliations[1:20])), cex = 0.65)
+```
+
+Storing Local Citation Counts in Each Data Frame 
+```{r}
+#Creating a local citation count for each paper for original data set, this one is for Nonproliferation
+results <- localCitations(Nonproliferation)
+results$Papers <- results$Papers[order(results$Papers$Paper,decreasing = F),]
+Nonproliferation <- Nonproliferation[order(rownames(Nonproliferation),decreasing = F),]
+Nonproliferation$LocalCitations <- results$Papers$LCS
+
+
+#Theoretical Physics
+results <- localCitations(Theo)
+results$Papers <- results$Papers[order(results$Papers$Paper,decreasing = F),]
+Theo <- Theo[order(rownames(Theo),decreasing = F),]
+Theo$LocalCitations <- results$Papers$LCS
+
+
+#Nuclear Engineering
+results <- localCitations(Nuc_Engin)
+results$Papers <- results$Papers[order(results$Papers$Paper,decreasing = F),]
+Nuc_Engin <- Nuc_Engin[order(rownames(Nuc_Engin),decreasing = F),]
+Nuc_Engin$LocalCitations <- results$Papers$LCS
+
+
+#Explosives Engineering
+results <- localCitations(Explosives_Engineering)
+results$Papers <- results$Papers[order(results$Papers$Paper,decreasing = F),]
+Explosives_Engineering <- Explosives_Engineering[order(rownames(Explosives_Engineering),decreasing = F),]
+Explosives_Engineering$LocalCitations <- results$Papers$LCS
+
+```
+
+Local Co-citation Network Analysis to determine novelty of specific publications (Issues with Explosive Engineering, unsure of cause) Plots show a historic overlook of local co-citation, indicating associated authors of interest and authors capable of novel research. Metrics attached with plot output.
+
+```{r}
+
+#Theoretical Physics
+options(width=130)
+histResults <- histNetwork(Theo, min.citations = 1, sep = ";")
+net <- histPlot(histResults, n=length(Theo), size = 10, labelsize=3)
+
+
+#Nuclear Engineering
+options(width=130)
+histResults <- histNetwork(Nuc_Engin, min.citations = 1, sep = ";")
+net <- histPlot(histResults, n=length(Nuc_Engin), size = 10, labelsize=3)
+
+
+#Explosives Engineering
+#options(width=130)
+#histResults <- histNetwork(Explosives_Engineering, min.citations = 1, sep = ";")
+#net <- histPlot(histResults, n=length(Explosives_Engineering), size = 10, labelsize=3)
+
+
+#Nonproliferation
+options(width=130)
+histResults <- histNetwork(Nonproliferation, min.citations = 1, sep = ";")
+net <- histPlot(histResults, n=length(Nonproliferation), size = 10, labelsize=3)
+```
+
+Additional Potential Output (Dendograms, K-means clustering on common concepts within documents)
+
+```{r}
+A <- cocMatrix(Theo, Field = "CR", sep = ".  ")
+A
+sort(Matrix::colSums(A), decreasing = TRUE)[1:20]
+
+CS <- conceptualStructure(Nonproliferation,field="ID", method="CA", minDegree=4, clust=5, stemming=FALSE, labelsize=10, documents=10)
+
+CS <- conceptualStructure(Theo,field="ID", method="MCA", minDegree=4, clust=5, stemming=F, labelsize=10, documents=10)
+
+CS <- conceptualStructure(Nuc_Engin,field="ID", method="CA", minDegree=4, clust=5, stemming=FALSE, labelsize=10, documents=10)
+```
+
+
+Top 10 Author results for adapted pure H-Index using a weighted novelty score. The more local citations a publication has, considering only publications in a 5 year span, indicate more novel research. This is combined with an adapted pure H-index by allowing for a weighted bonus for local citations within the data. Scroll on initial data frame to see output.
+
+```{r}
+#For Explosives Engineering, run entire chunk until "For Nonproliferation"
+#Here code is for initial adapted pure H-index Calculation
+authors <- gsub(","," ",names(results_Exp_Eng$Authors))
+indices <- Hindex(Explosives_Engineering, field = "author", elements = authors, sep = ";", years = 20)
+indices$H[order(indices$H$h_index, decreasing = T),]
+
+#This is code is being used to find where authors are located in the large initial data frame so that authors of interest can be pulled out, along with their papers, email, abstracts of papers, affiliations, and keywords associated to the papers.
+row_numbers_for_authors_Exp <- c()
+
+for (i in 1:nrow(indices$H)) {
+  
+row_numbers_for_authors_Exp[i] <-  list(which(str_detect(Explosives_Engineering$AU, pattern = indices$H$Element[i])))
+
+}
+#This is the connection to the large initial data frame and the H-index data frame.
+indices$H$row <- row_numbers_for_authors_Exp
+indices$H <- indices$H[order(indices$H$h_index, decreasing = T),]
+Explosives_Engineering[unlist(indices$H$row[1:10]),] %>% select(c("AU", "EM", "affiliations","ID" ,"AB","LocalCitations"))
+
+
+
+#For Nonproliferation
+authors <- gsub(","," ",names(results_Nonproliferation$Authors))
+indices <- Hindex(Nonproliferation, field = "author", elements = authors, sep = ";", years = 20)
+indices$H[order(indices$H$h_index, decreasing = T),]
+
+row_numbers_for_authors_Exp <- c()
+
+for (i in 1:nrow(indices$H)) {
+  
+row_numbers_for_authors_Exp[i] <-  list(which(str_detect(Nonproliferation$AU, pattern = indices$H$Element[i])))
+
+}
+indices$H$row <- row_numbers_for_authors_Exp
+indices$H <- indices$H[order(indices$H$h_index, decreasing = T),]
+Nonproliferation[unlist(indices$H$row[1:10]),] %>% select(c("AU", "EM", "affiliations","ID" ,"AB",'LocalCitations'))
+
+
+#For Nuclear Engineering
+authors <- gsub(","," ",names(results_Nuc_Engin$Authors))
+indices <- Hindex(Nuc_Engin, field = "author", elements = authors, sep = ";", years = 20)
+indices$H[order(indices$H$h_index, decreasing = T),]
+
+row_numbers_for_authors_Exp <- c()
+
+for (i in 1:nrow(indices$H)) {
+  
+row_numbers_for_authors_Exp[i] <-  list(which(str_detect(Nuc_Engin$AU, pattern = indices$H$Element[i])))
+
+}
+indices$H$row <- row_numbers_for_authors_Exp
+indices$H <- indices$H[order(indices$H$h_index, decreasing = T),]
+Nuc_Engin[unlist(indices$H$row[1:10]),] %>% select(c("AU", "EM", "affiliations","ID" ,"AB","LocalCitations"))
+
+
+
+#For Theoretical Physics
+authors <- gsub(","," ",names(results_Theo$Authors))
+indices <- Hindex(Theo, field = "author", elements = authors, sep = ";", years = 20)
+indices$H[order(indices$H$h_index, decreasing = T),]
+
+row_numbers_for_authors_Exp <- c()
+
+for (i in 1:nrow(indices$H)) {
+  
+row_numbers_for_authors_Exp[i] <-  list(which(str_detect(Theo$AU, pattern = indices$H$Element[i])))
+
+}
+
+indices$H$row <- row_numbers_for_authors_Exp
+indices$H <- indices$H[order(indices$H$h_index, decreasing = T),]
+Theo[unlist(indices$H$row[1:10]),] %>% select(c("AU", "EM", "affiliations","ID" ,"AB", "LocalCitations"))
+```
+
+Lotkas Law Coefficient, measures the expected frequency of authors and their number of publications vs. the observed frequency of authors and their number of publications.
+
+
+```{r}
+#Lotka Nonproliferation
+L <- lotka(results_Nonproliferation)
+L$AuthorProd
+# Observed distribution
+Observed=L$AuthorProd[,3]
+# Theoretical distribution with Beta = 2
+Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]));plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",main="Scientific Productivity Nonproliferation");lines(L$AuthorProd[,1],Observed,col="blue");legend(x="topright",c("Theoretical (B=2)","Observed"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
+
+#Lotka Explosives Engineering
+L <- lotka(results_Exp_Eng)
+L$AuthorProd
+# Observed distribution
+Observed=L$AuthorProd[,3]
+# Theoretical distribution with Beta = 2
+Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]));plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",main="Scientific Productivity Explosives Engineering");lines(L$AuthorProd[,1],Observed,col="blue");legend(x="topright",c("Theoretical (B=2)","Observed"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
+
+#Lotka Nuclear Engineering
+L <- lotka(results_Nuc_Engin)
+L$AuthorProd
+# Observed distribution
+Observed=L$AuthorProd[,3]
+# Theoretical distribution with Beta = 2
+Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]));plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",main="Scientific Productivity Nuclear Engineering");lines(L$AuthorProd[,1],Observed,col="blue");legend(x="topright",c("Theoretical (B=2)","Observed"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
+
+#Lotka Theoretical Physics
+L <- lotka(results_Theo)
+L$AuthorProd
+# Observed distribution
+Observed=L$AuthorProd[,3]
+# Theoretical distribution with Beta = 2
+Theoretical=10^(log10(L$C)-2*log10(L$AuthorProd[,1]));plot(L$AuthorProd[,1],Theoretical,type="l",col="red",ylim=c(0, 1), xlab="Articles",ylab="Freq. of Authors",main="Scientific Productivity Theoretical Physics");lines(L$AuthorProd[,1],Observed,col="blue");legend(x="topright",c("Theoretical (B=2)","Observed"),col=c("red","blue"),lty = c(1,1,1),cex=0.6,bty="n")
+```
+
+(CSV Extract for Final Data)
+
+```{r}
+write.csv(Theo, file = "C:\\Users\\danie\\Desktop\\Web of Science Data\\Theo.csv")
+write.csv(Nuc_Engin, file = "C:\\Users\\danie\\Desktop\\Web of Science Data\\Nuc_Engin.csv")
+write.csv(Nonproliferation, file = "C:\\Users\\danie\\Desktop\\Web of Science Data\\Nonproliferation.csv")
+write.csv(Explosives_Engineering, file = "C:\\Users\\danie\\Desktop\\Web of Science Data\\Explosives_Engineering.csv")
+```
+
+
 
