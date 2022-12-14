@@ -33,7 +33,7 @@ From this, we finally calculated the H-index using this formula:
 
 ![My Image](h_3.png)
 
-For our **association analysis**, we used a library in R called **Bibliometrix**. This R package “provides a set of tools for quantitative research in bibliometrics and scientometrics.” This evaluation of publication data, Including their citations, is used in almost every field of science to evaluate the growth of their scientific community conceptually. This package comes with functions biblioAnalysis to perform basic descriptive analysis, options to summarize statistical analysis, citations to obtain the most frequently cited publications, dominance to obtain the highest scoring authors, histNetwork along with histPlot to obtain a historical local citations network analysis, and Hindex to calculate a standard Hindex rating, and many more. Along with the Bibliometrix package, we also used **tidyverse** for visualizations along with the plot functions that were provided by Bibliometrix. 
+For our **association analysis**, we used a library in R called **Bibliometrix**. This R package “provides a set of tools for quantitative research in bibliometrics and scientometrics.” This evaluation of publication data, Including their citations, is used in almost every field of science to evaluate the growth of their scientific community conceptually. This package comes with functions 'biblioAnalysis' to perform basic descriptive analysis, 'options' to summarize statistical analysis, 'citations' to obtain the most frequently cited publications, 'dominance' to obtain the highest scoring authors, 'histNetwork' along with 'histPlot' to obtain a historical local citations network analysis, and 'Hindex' to calculate a standard Hindex rating, and many more. Along with the Bibliometrix package, we also used **tidyverse** for visualizations along with the plot functions that were provided by Bibliometrix. 
 
 **K-means clustering** places all observations into k number of clusters, with each one being assigned to the cluster who’s mean (or centroid) has the shortest distance. In this instance, each publication serves as an observation, and the clusters in which they are organized represent the keywords that those articles contain.
 
@@ -44,7 +44,8 @@ We took a sample of 100 publications for each subject area, then conducted a **9
 ## Results
 
 During the analysis, we were able to determine detailed information regarding the most prolific organizations and authors related to each subject area of interest. Below, we have included output related to one subject area of interest, Nonproliferation, in order to showcase some of the output for this project.
-Figure 1, shows the frequency of affiliations within each of these publications. By utilizing the biblioanalysis function inside the bibliometrix package, affiliations frequencies were generated for each subject area. This bar plot shows the top 20 affiliations associated with Nonproliferation in specific. This output allows the end user to be able to see which organizations would be ideal to contact in relation to Nonproliferation for future partnerships.
+
+Figure 1, shows the frequency of affiliations within each of these publications. By utilizing the 'biblioanalysis' function inside the bibliometrix package, affiliations frequencies were generated for each subject area. This bar plot shows the top 20 affiliations associated with Nonproliferation in specific. This output allows the end user to be able to see which organizations would be ideal to contact in relation to Nonproliferation for future partnerships.
 
 **Figure 1**
 
