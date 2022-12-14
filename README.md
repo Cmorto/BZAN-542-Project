@@ -99,7 +99,8 @@ Sources
 
 ## Sources
 https://www.bibliometrix.org/vignettes/Introduction_to_bibliometrix.html
-[https://www.webofscience.com/wos/woscc/basic-search](https://www.webofscience.com/wos/woscc/basic-search)
+[https://www.webofscience.com/wos/woscc/basic-search]
+(https://www.webofscience.com/wos/woscc/basic-search)
 https://www.rosenberglab.net/impact_adapt_pure_h_index_frac.html
 https://images.webofknowledge.com/images/help/WOS/hs_wos_fieldtags.html
 
