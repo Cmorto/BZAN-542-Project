@@ -1,6 +1,8 @@
 # Network Analysis of Scientific Publications - BZAN 542
 Authors: Daniel Riddick, Christopher Morton, & Stephen Muszik
-Summary/Overview
+
+## Summary/Overview
+
 This project is an example of using R (and possibly R shiny) to Analyze scientific publications and create a user interface that assists in finding impactful authors and their affiliations within a subject area. This project was done for BZAN 542 final project.
 
 The data used for this project came from the webofscience. https://www.webofscience.com/wos/woscc/basic-search From the website you can only obtain 500 publications at a time in a Bibtex format. For this reason we limited this initial proof of concept to four specific subject areas: Explosives Engineering, Non Proliferation, Nuclear Engineering, and Theoretical Physics.
