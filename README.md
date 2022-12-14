@@ -85,19 +85,9 @@ Figure 7
 
 ## Conclusion
 
-The purpose of this project was to determine future partnership opportunities in specific subject areas of interest by utilizing publication data from the Web of Science. Within this project, output was produced that successfully allows the end user to be able to determine which organizations and individuals are of high interest related to a subject area. 
-Sources
+The purpose of this project was to determine future partnership opportunities in specific subject areas of interest by utilizing publication data from the Web of Science. Within this project, output was produced that successfully allows the end user to be able to determine which organizations and individuals are of high interest related to a subject area.
 
-
-
-
-
-
-
-
-
-
-
+In order to successfully ensure reliability of these results, future validation and future augmentation for the analysis is required. These forms of validation and augmentation include, but are not limited to: network cross-validation through edge sampling, a potential combined metric with the adapted pure H-index and local citation count, interviewing experts to ensure on target output, incorporating an API from the Web of Science to automatically retrieve data,and creating a shiny application that consolidates output into one format for ease of use.
 
 ## Sources
 https://www.bibliometrix.org/vignettes/Introduction_to_bibliometrix.html
